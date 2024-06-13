@@ -1,78 +1,60 @@
 import React, { Component } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 
-interface Formdata {
-  name: string,
-  email : string,
-  password: string
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
 }
+
 interface LoginState {
   name: string;
   email: string;
   password: string;
-  submitted: boolean;
-  values: Formdata[]
 }
 
 class Login extends Component<{}, LoginState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      name: '',
-      email: '',
-      password: '',
-      submitted: false,
-     values: this.getLocalStorageData(),
-    };
-  }
-  componentDidMount() {
-    const values = this.getLocalStorageData();
-    if (values.length > 0) {
-      this.setState({ values, submitted: true });
-    }
-  }
-
-  getLocalStorageData = (): Formdata[] => {
-    const data = localStorage.getItem('formData');
-    return data ? JSON.parse(data) : [];
+  state: LoginState = {
+    name: '',
+    email: '',
+    password: ''
   };
 
   handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    this.setState({...this.state, [name]: value });
+    this.setState((prevState) => ({
+      ...prevState,
+      [name]: value
+    }));
   };
-
-
 
   handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    const { name, email, password} = this.state;
-    const Newdata : Formdata = {name,email,password}
-    this.setState((prevState) =>({
-      values:[...prevState.values,Newdata],
-      submitted: true,
-      name: "",
-      email: "",
-      password: "",
-    }), () => {
-      localStorage.setItem('formData', JSON.stringify(this.state.values));
-    })
+    const { name, email, password } = this.state;
+    const savedData = localStorage.getItem('formData');
+    let isUserExist: boolean = false; 
+
+    if (savedData) {
+      const parsedData: FormData[] = JSON.parse(savedData)
+      for (let data of parsedData) {
+        if (data.name === name && data.email === email && data.password === password) {
+          isUserExist = true;
+          break;
+        }
+      }
+    }
+
+    alert(isUserExist ? 'This data is already saved' : 'No matching data found');
   };
 
   render() {
+    const { name, email, password } = this.state;
+
     return (
-      <Container component="main" maxWidth="xs">
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          justifyContent="center"
-          minHeight="100vh"
-        >
-          <Typography component="h1" variant="h5">
-            Log In
-          </Typography>
-          <form onSubmit={this.handleSubmit} noValidate>
+      <Container component="main" maxWidth="xs" sx={{marginBottom: "14rem"}}>
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100vh">
+          <Typography component="h1" variant="h5">Log In</Typography>
+          <form onSubmit={this.handleSubmit}>
             <TextField
               variant="outlined"
               margin="normal"
@@ -83,7 +65,7 @@ class Login extends Component<{}, LoginState> {
               name="name"
               autoComplete="name"
               autoFocus
-              value={this.state.name}
+              value={name}
               onChange={this.handleInputChange}
             />
             <TextField
@@ -95,7 +77,7 @@ class Login extends Component<{}, LoginState> {
               label="Email"
               name="email"
               autoComplete="email"
-              value={this.state.email}
+              value={email}
               onChange={this.handleInputChange}
             />
             <TextField
@@ -108,31 +90,12 @@ class Login extends Component<{}, LoginState> {
               type="password"
               id="password"
               autoComplete="current-password"
-              value={this.state.password}
+              value={password}
               onChange={this.handleInputChange}
             />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-            >
-              Submit
-            </Button>
+            <Button type="submit" fullWidth variant="contained" color="primary">Submit</Button>
           </form>
-          {this.state.submitted && (
-                <Box sx={{ marginTop: '2rem' }}>
-                {this.state.values.map((data,index)=>(
-                <Box key={index}>
-                <Typography>Full Name: {data.name}</Typography>
-                <Typography>Email: {data.email}</Typography>
-                <Typography>Password: {data.password}</Typography>
-                </Box>
-                ))}
-            </Box>
-        )}
-    </Box>
-
+        </Box>
       </Container>
     );
   }

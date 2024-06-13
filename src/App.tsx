@@ -1,14 +1,26 @@
 import React from 'react';
 import './App.css';
-import Sidebar from './Components/Sidebar';
-// import Login from './Components/Login';
+import {Container,Box} from '@mui/material';
+// import Sidebar from './Components/Sidebar';
+// import ForgetPassword from './Components/ForgetPassword';
+
+import Registration from './Components/Registration';
+import Login from './Components/Login';
 
 function App() {
   return (
-    <div className="App">
-    <Sidebar/>
-    {/* <Login/> */}
-    </div>
+    <Container component="main" maxWidth="lg">
+    <Box
+      display="flex"
+      flexDirection="row"
+      alignItems="center"
+      justifyContent="space-around"
+      minHeight="100vh"
+    >
+      <Registration />
+      <Login />
+    </Box>
+  </Container>
   );
 }
 
