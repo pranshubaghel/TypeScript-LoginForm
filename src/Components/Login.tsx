@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
+// import ForgetPassword from './ForgetPassword';
+import { Link } from 'react-router-dom';
+
 
 interface FormData {
   name: string;
@@ -32,10 +35,10 @@ class Login extends Component<{}, LoginState> {
     event.preventDefault();
     const { name, email, password } = this.state;
     const savedData = localStorage.getItem('formData');
-    let isUserExist: boolean = false; 
+    let isUserExist: boolean = false;
 
     if (savedData) {
-      const parsedData: FormData[] = JSON.parse(savedData)
+      const parsedData: FormData[] = JSON.parse(savedData);
       for (let data of parsedData) {
         if (data.name === name && data.email === email && data.password === password) {
           isUserExist = true;
@@ -51,10 +54,10 @@ class Login extends Component<{}, LoginState> {
     const { name, email, password } = this.state;
 
     return (
-      <Container component="main" maxWidth="xs" sx={{marginBottom: "14rem"}}>
+      <Container component="main" maxWidth="xs">
         <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight="100vh">
           <Typography component="h1" variant="h5">Log In</Typography>
-          <form onSubmit={this.handleSubmit}>
+          <form onSubmit={this.handleSubmit} style={{ width: '100%' }}>
             <TextField
               variant="outlined"
               margin="normal"
@@ -93,8 +96,11 @@ class Login extends Component<{}, LoginState> {
               value={password}
               onChange={this.handleInputChange}
             />
-            <Button type="submit" fullWidth variant="contained" color="primary">Submit</Button>
+            <Button type="submit" fullWidth variant="contained" color="primary" sx={{ mt: 2 }}>Submit</Button>
           </form>
+          <Box width="100%" marginLeft={33} marginTop={2}>
+          <li><Link to='/forgetpassword'>ForgetPassword</Link></li>
+          </Box>
         </Box>
       </Container>
     );

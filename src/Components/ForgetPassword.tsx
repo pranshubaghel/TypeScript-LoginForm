@@ -1,202 +1,126 @@
-import React, { Component, ChangeEvent } from 'react';
-import { Button, TextField, Container, Typography, Box } from '@mui/material';
-import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
+import React, { Component } from 'react';
+import { TextField, Button, Container, Typography, Box } from '@mui/material';
 
-interface State {
+interface ForgetPasswordState {
   email: string;
+  showOTP: boolean;
   otp: string;
-  password: string;
-  confirmPassword: string;
-  step: number;
-  error: string;
 }
 
-export default class ForgetPassword extends Component<{}, State> {
-  state: State = {
-    email: '',
-    otp: '',
-    password: '',
-    confirmPassword: '',
-    step: 1,
-    error: ''
-  };
+class ForgetPassword extends Component<{}, ForgetPasswordState> {
+  constructor(props: {}) {
+    super(props);
+    this.state = {
+      email: '',
+      showOTP: false,
+      otp: '',
+      
+    };
+  }
 
-  handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    this.setState(prevState => ({
+  handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    this.setState((prevState) => ({
       ...prevState,
       [name]: value
     }));
   };
 
-  handleSubmit = () => {
-    const { email, otp, password, confirmPassword, step } = this.state;
-    if (step === 1) {
-      if (!email) {
-        this.setState({ error: 'Email is required' });
-        return;
-      }
-      console.log("OTP sent to:", email);
-      this.setState({ step: 2, error: '' });
-    } else if (step === 2) {
-      if (!otp) {
-        this.setState({ error: 'OTP is required' });
-        return;
-      }
-      console.log("OTP entered:", otp);
-      this.setState({ step: 3, error: '' });
-    } else if (step === 3) {
-      if (!password || !confirmPassword) {
-        this.setState({ error: 'Both password fields are required' });
-        return;
-      }
-      if (password !== confirmPassword) {
-        this.setState({ error: "Passwords do not match" });
-        return;
-      }
-      console.log("Password has been reset to:", password);
-      this.setState({ step: 4, error: '' });
-      setTimeout(() => {
-        this.setState({
-          email: '',
-          otp: '',
-          password: '',
-          confirmPassword: '',
-          step: 1
-        });
-      }, 3000); // Adjust timeout value as needed
+  handleForgetPassword = () => {
+    const { email } = this.state;
+    const data = localStorage.getItem('formData');
+    const values = data ? JSON.parse(data) : [];
+    const emailExists = values.some((data: { email: string }) => data.email === email);
+
+    if (emailExists) {
+      const otp = this.generateOtp();
+      console.log("Email matches. Generating OTP:", otp);
+      this.setState({ showOTP: true, otp });
+    } else {
+      alert('Email does not match!');
     }
   };
-    
-  
+
+  generateOtp = () => {
+    const digits = '0123456789';
+    let OTP = '';
+    const len = digits.length;
+    for (let i = 0; i < 4; i++) {
+      OTP += digits[Math.floor(Math.random() * len)];
+    }
+    console.log("OTP is", OTP)
+    return OTP;
+  };
+
+  handleOTPSubmit = () => {
+    const { otp } = this.state;
+    alert(`OTP submitted: ${otp}`);
+  };
 
   render() {
-    const { email, otp, password, confirmPassword, step, error } = this.state;
+    const { email, showOTP, otp } = this.state;
 
     return (
-      <Container maxWidth="sm">
-        <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <PermIdentityOutlinedIcon fontSize="large" />
+      <Container component="main" maxWidth="xs">
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          minHeight="100vh"
+          marginTop="5rem"
+        >
           <Typography component="h1" variant="h5">
-            {step === 1 ? 'Forget Password' : step === 2 ? 'Verify OTP' : step === 3 ? 'Set Password' : 'Success'}
+            Forget Password
           </Typography>
-          <Box sx={{ mt: 1 }}>
-            {step === 1 && (
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-                value={email}
-                onChange={this.handleChange}
-              />
-            )}
-            {step === 2 && (
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id="email"
+            label="Enter your email"
+            name="email"
+            autoComplete="email"
+            value={email}
+            onChange={this.handleInputChange}
+          />
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={this.handleForgetPassword}
+          >
+            Submit
+          </Button>
+          {showOTP && (
+            <>
               <TextField
                 variant="outlined"
                 margin="normal"
                 required
                 fullWidth
                 id="otp"
-                label="OTP"
+                label="Enter OTP"
                 name="otp"
-                autoFocus
+                autoComplete="one-time-code"
                 value={otp}
-                onChange={this.handleChange}
+                onChange={this.handleInputChange}
               />
-            )}
-            {step === 3 && (
-              <>
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="New Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={this.handleChange}
-                />
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="confirmPassword"
-                  label="Confirm Password"
-                  type="password"
-                  id="confirmPassword"
-                  autoComplete="new-password"
-                  value={confirmPassword}
-                  onChange={this.handleChange}
-                />
-              </>
-            )}
-            {error && <Typography color="error">{error}</Typography>}
-            {step === 4 && (
-              <Typography variant="body1">
-                Your password has been successfully reset.
-              </Typography>
-            )}
-            {step < 4 && (
               <Button
                 fullWidth
                 variant="contained"
                 color="primary"
-                onClick={this.handleSubmit}
+                onClick={this.handleOTPSubmit}
               >
-                {step === 1 ? 'Send OTP' : step === 2 ? 'Verify OTP' : 'Set Password'}
+                Submit OTP
               </Button>
-            )}
-          </Box>
+            </>
+          )}
         </Box>
-    </Container>
+      </Container>
     );
   }
 }
-// import React, { Component } from 'react'
-// import { Button, TextField, Container, Typography, Box } from '@mui/material';
 
-// interface State {
-//   email: string;
-//   otp: string;
-//   password: string;
-//   confirmpassword : string;
-//   step : number;
-//   error : string;
-// }
-
-// export default class ForgetPassword extends Component<{}, State> {
-// constructor(props : {}){
-//   super(props);
-//   this.state = {
-//     email : '',
-//     otp : '',
-//     password : '',
-//     confirmpassword: '',
-//     step : 1,
-//     error : ''
-
-//   }
-
-// }
-
-//   render() {
-//     return (
-//     <Box
-//     sx={eewgr}
-//       <TextField id="outlined-basic" label="email" variant="outlined" />
-    
-//     </Box>
-//   );
-// }
-// }
-  
+export default ForgetPassword;
