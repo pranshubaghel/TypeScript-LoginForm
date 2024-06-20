@@ -1,4 +1,4 @@
-//  App;
+
 // import React from 'react';
 // import './App.css';
 // import { Container, Box } from '@mui/material';
@@ -38,14 +38,19 @@
 
 import React, { Component } from 'react'
 // import ForgetPassword from './Components/ForgetPassword'
-import Registration from './Components/Registration'
+// import Registration from './Components/Registration'
+import RegistrationForm from './Components/RegistrationForm'
+import LoginPage from './Components/LoginPage'
+import ResetPassword from './Components/ResetPassword'
 
 export default class App extends Component {
   render() {
     return (
       <div>
         {/* <ForgetPassword/> */}
-        <Registration/>
+        <RegistrationForm/>
+        <LoginPage/>
+        <ResetPassword/>
             </div>
     )
   }
