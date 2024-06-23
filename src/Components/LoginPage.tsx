@@ -1,5 +1,6 @@
 import React, { Component, ChangeEvent, FormEvent } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 interface UserData {
   name: string;
@@ -57,14 +58,14 @@ class LoginPage extends Component<{}, State> {
           user => user.name === name && user.email === email && user.password === password
         );
         if (userExists) {
-          alert('This data already exists');
+          alert('user already exists');
           this.setState({
             name: '',
             email: '',
             password: ''
           })
         } else {
-          alert('This data does not match');
+          alert('user does not match');
           this.setState({
             name: '',
             email: '',
@@ -125,7 +126,11 @@ class LoginPage extends Component<{}, State> {
             Login
           </Button>
         </form>
+        <Box width="100%" marginLeft={28} marginTop={2}>
+          <li><Link to='/forgetpassword'>ResetPassword</Link></li>
+          </Box>
       </Container>
+      
     );
   }
 }

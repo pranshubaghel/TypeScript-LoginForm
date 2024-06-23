@@ -127,6 +127,7 @@ class ResetPassword extends Component<{}, State> {
     if (this.validatePasswordForm()) {
       const { email, password } = this.state;
       const savedData = localStorage.getItem('userData');
+      console.log(savedData)
       if (savedData) {
         const registeredUsers = JSON.parse(savedData);
         const updatedUsers = registeredUsers.map((user: { email: string, password: string }) =>
@@ -134,6 +135,7 @@ class ResetPassword extends Component<{}, State> {
         );
         localStorage.setItem('userData', JSON.stringify(updatedUsers));
         alert('Password reset successfully!');
+        console.log(updatedUsers)
         this.setState({
           email: '',
           otp: '',

@@ -48,16 +48,23 @@ class RegistrationForm extends Component<{}, State> {
 
   handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    this.setState({...this.state, [name]: value });
+    this.setState({ ...this.state, [name]: value });
   };
 
   validateForm = () => {
-    const { name, email, password } = this.state;
+    const { name, email, password, submittedData } = this.state;
     const errors = {
       name: name ? '' : 'Name is required',
       email: email ? '' : 'Email is required',
       password: password ? '' : 'Password is required'
     };
+
+    // Check if email already exists
+    const emailExists = submittedData.some(data => data.email === email);
+    if (emailExists) {
+      errors.email = 'Email already exists';
+    }
+
     this.setState({ errors });
     return !errors.name && !errors.email && !errors.password;
   };
@@ -67,12 +74,20 @@ class RegistrationForm extends Component<{}, State> {
     if (this.validateForm()) {
       const { name, email, password, submittedData } = this.state;
       const newUserData: UserData = { name, email, password };
+
+      // Check if email already exists before saving
+      const emailExists = submittedData.some(data => data.email === email);
+      if (emailExists) {
+        alert('Email already exists! Please use a different email.');
+        return;
+      }
+
       const updatedSubmittedData = [...submittedData, newUserData];
       localStorage.setItem('userData', JSON.stringify(updatedSubmittedData));
-      this.setState({ 
-        submittedData: updatedSubmittedData, 
-        name: '', 
-        email: '', 
+      this.setState({
+        submittedData: updatedSubmittedData,
+        name: '',
+        email: '',
         password: '',
         errors: { name: '', email: '', password: '' }
       });
